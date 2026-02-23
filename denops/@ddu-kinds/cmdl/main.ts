@@ -11,11 +11,11 @@ import {
   DATA_FILE_NAME,
   loadEntries,
   saveEntries,
-} from "../../@ddu-sources/cmdl/main.ts";
+} from "@kmnk/ddu-source-cmdl";
 
 // Re-export ActionData so consumers can follow the standard pattern:
 //   import type { ActionData } from "@kmnk/ddu-kind-cmdl";
-export type { ActionData } from "../../@ddu-sources/cmdl/main.ts";
+export type { ActionData } from "@kmnk/ddu-source-cmdl";
 
 type Params = Record<string | number | symbol, never>;
 

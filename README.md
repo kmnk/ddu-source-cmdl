@@ -123,3 +123,7 @@ The file is created automatically on the first `add` action.
 ## License
 
 MIT — see [LICENSE](LICENSE)
+
+---
+
+Generated with [Claude Code](https://claude.com/claude-code) assistance.

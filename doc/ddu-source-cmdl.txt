@@ -3,6 +3,8 @@
 Author:  KMNK
 License: MIT License
 
+Generated with Claude Code assistance (https://claude.com/claude-code)
+
 ==============================================================================
 CONTENTS					*ddu-source-cmdl-contents*
 

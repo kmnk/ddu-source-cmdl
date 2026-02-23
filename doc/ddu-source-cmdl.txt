@@ -3,7 +3,7 @@
 Author:  KMNK
 License: MIT License
 
-Generated with Claude Code assistance.
+Generated with Claude Code assistance (https://claude.com/claude-code)
 
 ==============================================================================
 CONTENTS					*ddu-source-cmdl-contents*
@@ -22,23 +22,23 @@ Examples		|ddu-source-cmdl-examples|
 INTRODUCTION					*ddu-source-cmdl-introduction*
 
 ddu-source-cmdl provides a ddu.vim source and kind for managing a personal
-list of labeled Vim commands. Each entry consists of a human-readable label
-and an Ex command. Entries are persisted to a JSON file and can be registered,
+list of labeled Vim commands. Each entry pairs a human-readable label with a
+Vim Ex command. Entries are persisted to a JSON file and can be registered,
 edited, deleted, and executed through the ddu.vim interface.
 
 Requirements:
-- ddu.vim    https://github.com/Shougo/ddu.vim
-- denops.vim https://github.com/vim-denops/denops.vim
+- denops.vim  https://github.com/vim-denops/denops.vim
+- ddu.vim     https://github.com/Shougo/ddu.vim
 
 ==============================================================================
 INSTALL						*ddu-source-cmdl-install*
 
-Install with your preferred plugin manager. Example with vim-plug: >
+Install with your preferred plugin manager.
 
+vim-plug: >
 	Plug 'kmnk/ddu-source-cmdl'
 <
-Install with lazy.nvim: >
-
+lazy.nvim: >
 	{
 	  'kmnk/ddu-source-cmdl',
 	  dependencies = {
@@ -52,27 +52,29 @@ SOURCE						*ddu-source-cmdl-source*
 
 Name: `cmdl`
 
-Reads entries from the data file and enqueues them as ddu items.
-Each item uses the entry label as `word` and carries |ddu-source-cmdl-kind|
-action data.
+Reads entries from the data file and enqueues them as ddu items. The item
+`word` is set to the entry label. When no entries are registered a single
+placeholder row is shown so that kind actions (e.g. `add`) remain accessible.
 
+Each item carries the following display format: >
+	{label}<Tab>{command}
+<
 ------------------------------------------------------------------------------
 SOURCE PARAMS				*ddu-source-cmdl-source-params*
 
-highlights					*ddu-source-cmdl-param-highlights*
-	A dictionary of Vim highlight group names used to colorize parts of
-	each item. Set a key to `""` to disable that highlight.
+						*ddu-source-cmdl-param-highlights*
+highlights
+	A dictionary of Vim highlight group names applied to parts of each
+	item. Set a key to `""` to disable that highlight.
 
-	highlights.command			(default: "Comment")
-		Applied to the command column (the part after the tab separator).
+	highlights.command			(default: `"Comment"`)
+		Applied to the command column (text after the tab separator).
 		Dimmed by default so the label stands out as the primary text.
 
-	highlights.placeholder			(default: "Comment")
-		Applied to the empty-state row shown when no entries are
-		registered yet.
+	highlights.placeholder			(default: `"Comment"`)
+		Applied to the empty-state placeholder row.
 
-	Example — use a custom group for commands: >
-
+	Example: >
 		call ddu#start(#{
 		\   sources: [#{
 		\     name: 'cmdl',
@@ -80,14 +82,13 @@ highlights					*ddu-source-cmdl-param-highlights*
 		\   }],
 		\ })
 <
-
 ==============================================================================
 KIND						*ddu-source-cmdl-kind*
 
 Name: `cmdl`
 
-Defines the following actions on cmdl items. Set `defaultAction` to
-`"execute"` to run commands by pressing <CR>: >
+Defines actions on cmdl items. Set `defaultAction` to `"execute"` to run
+the registered command when pressing <CR>: >
 
 	call ddu#start(#{
 	\   sources: [#{name: 'cmdl'}],
@@ -101,27 +102,31 @@ KIND ACTIONS				*ddu-source-cmdl-kind-actions*
 
 						*ddu-source-cmdl-action-execute*
 execute
-	Execute the Vim Ex command of the selected entry.
-	Iterates over all selected items.
+	Execute the registered Vim Ex command of each selected item.
+	Iterates over all selected items in order.
+	Placeholder items are silently skipped.
 
 						*ddu-source-cmdl-action-add*
 add
 	Prompt for a label and a command, then append a new entry to the
-	data file. The currently selected item (if any) is ignored.
-	Returns |ddu-source-cmdl-actionflag-refreshitems| on success.
+	data file. The currently selected item is ignored; this action can
+	be called even when the list is empty.
+	Refreshes the item list on success.
+	An empty input cancels the action without saving.
 
 						*ddu-source-cmdl-action-edit*
 edit
-	Prompt for a new label and command for the first selected entry.
-	The current values are pre-filled in the input prompt. Press
-	<Esc> or clear the field to cancel without saving.
-	Returns |ddu-source-cmdl-actionflag-refreshitems| on success.
+	Prompt to update the label and command of the first selected entry.
+	Current values are pre-filled in the input prompt.
+	Refreshes the item list on success.
+	An empty input cancels the action without saving.
 
 						*ddu-source-cmdl-action-delete*
 delete
-	Ask for confirmation and then delete all selected entries from
-	the data file. Supports multi-item deletion.
-	Returns |ddu-source-cmdl-actionflag-refreshitems| on success.
+	Ask for confirmation and then delete all selected entries from the
+	data file. Placeholder items are excluded from the count and are
+	not deleted. Supports multi-item deletion.
+	Refreshes the item list on success.
 
 ==============================================================================
 FUNCTIONS					*ddu-source-cmdl-functions*
@@ -129,8 +134,11 @@ FUNCTIONS					*ddu-source-cmdl-functions*
 						*ddu_source_cmdl#set_data_directory_path()*
 ddu_source_cmdl#set_data_directory_path({path})
 	Set the directory used to store the command list data file
-	(`cmdl.json`). {path} may contain `~` which is expanded at
-	access time. Defaults to `~/.cache/ddu-source-cmdl`.
+	(`cmdl.json`). {path} may contain `~` which is expanded at access
+	time. The default value is `~/.cache/ddu-source-cmdl`.
+
+	The data file is created automatically the first time an entry is
+	added.
 
 	Example: >
 		call ddu_source_cmdl#set_data_directory_path(
@@ -140,18 +148,18 @@ ddu_source_cmdl#set_data_directory_path({path})
 						*ddu_source_cmdl#get_data_directory_path()*
 ddu_source_cmdl#get_data_directory_path()
 	Return the absolute path to the configured data directory.
-	Called internally by the source and kind; rarely needed by users.
+	Called internally by the source and kind; rarely needed directly.
 
 ==============================================================================
 DATA FORMAT					*ddu-source-cmdl-data-format*
 
-Entries are stored as a JSON array in the data file. Each element is an
-object with the following fields:
+Entries are stored as a JSON array at `{data-dir}/cmdl.json`. Each element
+is an object with two string fields:
 
-	label	String. Human-readable name shown in the ddu UI.
-	command	String. Ex command executed by the `execute` action.
+	label	Human-readable name shown in the ddu UI.
+	command	Vim Ex command executed by the `execute` action.
 
-Example data file (`~/.cache/ddu-source-cmdl/cmdl.json`): >
+Example (`~/.cache/ddu-source-cmdl/cmdl.json`): >
 
 	[
 	  {
@@ -168,15 +176,18 @@ Example data file (`~/.cache/ddu-source-cmdl/cmdl.json`): >
 	  }
 	]
 <
+The file and its parent directory are created automatically on the first
+successful `add` action.
+
 ==============================================================================
 EXAMPLES					*ddu-source-cmdl-examples*
 
 Basic setup with ddu-ui-ff: >
 
-	" Change data directory (optional; default: ~/.cache/ddu-source-cmdl)
+	" Change data directory (optional)
 	call ddu_source_cmdl#set_data_directory_path('~/.local/share/cmdl')
 
-	" Start the cmdl picker
+	" Open the command list picker
 	call ddu#start(#{
 	\   ui: 'ff',
 	\   sources: [#{name: 'cmdl'}],
@@ -188,13 +199,12 @@ Basic setup with ddu-ui-ff: >
 <
 Keymaps inside the ddu-ui-ff buffer: >
 
-	" In your ddu-ui-ff keymap configuration:
 	call ddu#ui#ff#execute('itemAction', #{name: 'execute'})  " <CR>
 	call ddu#ui#ff#execute('itemAction', #{name: 'add'})      " a
 	call ddu#ui#ff#execute('itemAction', #{name: 'edit'})     " e
 	call ddu#ui#ff#execute('itemAction', #{name: 'delete'})   " d
 <
-Lazy.nvim + ddu.vim Lua configuration example: >
+Lua (lazy.nvim + ddu.vim): >
 
 	vim.keymap.set('n', '<leader>C', function()
 	  vim.fn['ddu#start']({

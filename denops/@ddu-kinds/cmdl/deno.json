@@ -10,6 +10,6 @@
   "imports": {
     "@denops/std": "jsr:@denops/std@~8.0.0",
     "@shougo/ddu-vim": "jsr:@shougo/ddu-vim@~11.0.0",
-    "@kmnk/ddu-source-cmdl": "jsr:@kmnk/ddu-source-cmdl@~0.1.0"
+    "@kmnk/ddu-source-cmdl": "../../@ddu-sources/cmdl/main.ts"
   }
 }

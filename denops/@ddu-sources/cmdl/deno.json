@@ -1,5 +1,6 @@
 {
   "name": "@kmnk/ddu-source-cmdl",
+  "version": "0.1.0",
   "exports": {
     ".": "./main.ts"
   },

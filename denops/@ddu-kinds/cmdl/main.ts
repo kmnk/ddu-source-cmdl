@@ -2,10 +2,7 @@
 // Generated with Claude Code assistance.
 
 import { BaseKind } from "@shougo/ddu-vim/kind";
-import {
-  ActionFlags,
-  type Actions,
-} from "@shougo/ddu-vim/types";
+import { ActionFlags, type Actions } from "@shougo/ddu-vim/types";
 import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
 
